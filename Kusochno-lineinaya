@@ -1,0 +1,24 @@
+arrx = [10,15,20,100]
+arry = [3,7,11,17]
+
+def rangex(arrx,x):
+    for i in range(len(arrx)):
+        if i+1 >= len(arrx):
+            print("Out of array")
+        else:
+            if arrx[i] <= x <= arrx[i+1]:
+                print(f"x in range [{arrx[i], arrx[i+1]}]")
+                return interpolation(arrx,arry,i,x)
+
+def interpolation(arrx,arry,i,x):
+    formula = (arry[i+1]-arry[i])/(arrx[i+1]-arrx[i])
+    F = arry[i]+formula*(x - arrx[i])
+    return F
+
+while(True):
+    x = input("Enter anything to start program, or 'No' to end ")
+    if x == 'No':
+        break
+    else:
+        x = float(input("Enter x: "))
+        print(f"F({x}) = {rangex(arrx,x)}")
