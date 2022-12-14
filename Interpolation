@@ -1,0 +1,95 @@
+#include <iostream>
+using namespace std;
+
+double funk(int masX, double masY)
+{
+    masY = masX * masX * masX - 2 * masX;
+    return masY;
+}
+int main()
+{
+    double res = 0;
+    int const m = 4;
+ 
+    int masX[m] = {1,5,7,11};
+    double masY[m][m] = { {3,0,0,0}, {4,0,0,0},{6,0,0,0}, {12,0,0,0},};
+
+    for (int i = 0; i < m; i++)
+    {
+        masY[i][0] = funk(masX[i], masY[i][0]);
+    }
+
+    for (int i = 0; i < m; i++)
+    {
+        cout << 'x' << '\t';
+    }
+
+    cout << endl;
+
+    for (int i = 0; i < m; i++) {
+        cout << masX[i] << '\t';
+    }
+
+    cout << endl<<endl;
+        
+    for (int i = 0; i < m ; i++)
+    {
+        cout << 'y' << '\t';
+    }
+
+    cout << endl;
+
+    for (int i = 0; i < m ;i++)
+    {
+        
+        cout<<masY[i][0] << '\t';
+    }
+
+    cout << endl<<endl;
+
+    for (int i = 1, z = 1; i < m; i++, z++)
+
+    {
+        for (int j = 0; j < m - z; j++)
+        {
+            masY[j][i] = (masY[j + 1][i - 1] - masY[j][i - 1]) / (masX[j + i] - masX[j]);
+        }
+    }
+
+    for (int i = 0; i < m;i++)
+    {
+        for (int j = 0;j < m;j++)
+        {
+            printf("%5f | ", masY[i][j]);
+        }
+        cout << endl;
+    }
+    int z = m;
+    double x;
+    while (z != 0)
+    {
+        cin >> x;
+        if (x<masX[0] || x>masX[m - 1])
+        {
+            cout << "Error"; break;
+        }
+        double tmp = 0;  z = m - 1;
+        res = masY[0][0];
+        for (int i = 1; i < m; i++)
+        {
+            tmp = masY[0][i];
+
+            for (int j = 0; j < m - z;j++)
+            {
+                tmp *= (x - masX[j]);
+            }
+            res += tmp;
+            z -= 1;
+        }
+        cout<<res;
+        res=0;
+        z -= 1;
+    }
+}
+
+
