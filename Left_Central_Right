@@ -1,0 +1,47 @@
+#include <iostream>
+using namespace std;
+
+const double h = 0.1;
+double F(double x)
+{
+	return sin(x);
+}
+
+double f1(double x)
+{
+	return cos(x);
+}
+
+double f(double x)
+{
+	double fl;
+	fl = (F(x) - F(x - h)) / h; 
+	return fl;
+}
+
+double fr(double x) {
+
+	double fr;
+	fr = (F(x + h) - F(x)) / h;
+	return fr;
+}
+
+double fc(double x) {
+
+	double fc;
+	fc = (F(x + h) - F(x - h)) / (2 * h);
+	return fc;
+}
+
+int main()
+{
+	const double pi = acos(-1);
+	double x;
+	double f2;
+	cin >> x;
+	x = 180 / pi * x;
+	cout << "x = " << x << "\n";
+	cout << "fl = " << f(x) << "\n"<< f1(x) <<"|" << f1(x) - f(x) << "|" << ((f1(x) - f(x)) / x) * 100 << endl;
+	cout << "fr = " << fr(x) << "\n"<< f1(x) << "|" << f1(x) - fr(x) << "|" << ((f1(x) - fr(x)) / x) * 100 << endl;
+	cout << "fc = " << fc(x) << "\n"<<f1(x) << "|" << f1(x) - fc(x) << "|" << ((f1(x) - fc(x)) / x) * 100 << endl;
+}
