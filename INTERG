@@ -27,7 +27,7 @@ double FUNC2(double x)
 
 double iter1(double a, double b, double h, int n)
 {
-    double res = func1(a) / 2;
+    double res = func1(a) / 2.0;
     double x;
     for (int i = 1; i < n; i++)
     {
@@ -35,20 +35,20 @@ double iter1(double a, double b, double h, int n)
         res += func1(x);
         
     }
-    res = h * (res + func1(a + n * h) / 2);
+    res = h * (res + func1(a + n * h) / 2.0);
     return res;
 }
 
 double iter2(double a, double b, double h, int n)
 {
     double res, x;
-    res = func2(a) / 2;
+    res = func2(a) / 2.0;
     for (int i = 1; i < n; i++)
     {
         x = a + i * h;
         res += func2(x);
     }
-    res = h* (res + func2(a + n * h) / 2);
+    res = h* (res + func2(a + n * h) / 2.0);
     return res;
 }
 int main()
@@ -61,17 +61,17 @@ int main()
     double a, b, h, tz, x, res, sum, r, r1;
     if (s==1)
     {
-        a = 1;
-        b = 3;
+        a = 1.0;
+        b = 3.0;
         h = (b - a) / n;
-        x = h / 2;
+        x = h / 2.0;
         tz = FUNC1(b) - FUNC1(a);
         res = iter1(a, b, h, n);
         sum = iter1(a, b, x, n*2);
       
         printf("exact = %f\tstep h = %f\tstep h/2 = %f\t", tz, res, sum);
-        r = abs(tz - sum);
-        r1 = (abs(res - sum) / 3);
+        r = fabs(tz - sum);
+        r1 = (fabs(res - sum) / 3.0);
     
         cout << endl;
         printf("Error estimation according to the Runge rule: ");
@@ -80,16 +80,16 @@ int main()
     }
     else
     {
-        a = 0;
-        b = 1;
+        a = 0.0;
+        b = 1.0;
         h = (b - a) / n;
-        x = h / 2;
+        x = h / 2.0;
         tz =  FUNC2(b)-FUNC2(a);
         res = iter2(a, b, h, n);
         sum = iter2(a, b, x, n*2);
         printf("exact = %f\tstep h = %f\tstep h/2 = %f\t", tz, res, sum);
-        r = abs(tz - sum);
-        r1 = (abs(res - sum) / 3);
+        r = fabs(tz - sum);
+        r1 = (fabs(res - sum) / 3.0);
         cout << endl;
         printf("Error estimation according to the Runge rule:  ");
         cout << r << " and " << r1;
