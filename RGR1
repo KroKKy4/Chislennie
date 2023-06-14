@@ -1,0 +1,243 @@
+#include <iostream>
+#include <cstdlib>
+#include <string>
+#include <cmath>
+#include <locale>
+using namespace std;
+
+
+double initial_function(double x) {
+	return pow(exp(x),x) + 1 / x;
+}
+
+void onlypositive(double& num, string type) {
+	while (true) {
+		cin >> num;
+		if (num <= 0) {
+			cout << "Введите положительное! " << type;
+		}
+		else break;
+	}
+}
+
+void Swann(double x0, double t, double& a, double& b) { 
+
+	double Xk, delta;
+
+	double F[3];				
+	F[0] = initial_function(x0 - t);		
+	F[1] = initial_function(x0);			
+	F[2] = initial_function(x0 + t);		
+
+	if (F[1] >= F[0] && F[1] >= F[2]) {			
+		a = x0 - t;								
+		b = x0 + t;								
+	}											
+	if (F[1] <= F[0] && F[1] <= F[2]) {			
+		cout << "Введите другой x0";				
+		return;									
+	}											
+
+	if (F[1] <= F[0] && F[1] >= F[2]) {			
+		a = x0;									
+		Xk = x0 + t;							
+		delta = t;								
+	}											
+	else {										
+		b = x0;									
+		Xk = x0 - t;					
+		delta = -t;								
+	}											
+
+	int k = 1;							
+	double Xk1 = Xk + 2 * delta;		
+	while (initial_function(Xk1) < initial_function(Xk)) {				
+		if (delta > 0)a = Xk;					
+		else b = Xk;							
+		k++;									
+		Xk = Xk1;								
+		Xk1 = Xk + pow(2, k) * delta;			
+	}											
+	if (delta > 0) b = Xk1;						
+	else a = Xk1;								
+}
+
+
+double GoldMethod(double a, double b, double l) { 
+
+	double y = a + (b - a) * (3 - sqrt(5)) / 2, z = a + b - y;		
+
+
+	double fy = initial_function(y), fz = initial_function(z);							
+
+	while (abs(b - a) >= l) {	
+		if (fy < fz) {					
+			b = z;						
+			z = y;						
+			fz = fy;					
+			y = a + b - z;			
+			fy = initial_function(y);				
+		}								
+		else {							
+			a = y;						
+			y = z;						
+			fy = fz;					
+			z = a + b - y;				
+			fz = initial_function(z);				
+		}
+
+	}
+	return (a + b) / 2;
+}
+
+
+void Min_Max(double* F, double* X, double& Fmin, double& Xmin) {
+	if (F[0] <= F[1] && F[0] <= F[2]) {
+		Fmin = F[0];
+		Xmin = X[0];
+	}
+	else if (F[1] <= F[0] && F[1] <= F[2]) {
+		Fmin = F[1];
+		Xmin = X[1];
+	}
+	else {
+		Fmin = F[2];
+		Xmin = X[2];
+	}
+}
+
+
+void sort(double arr[4]) {
+	double temp;
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3 - i; j++) {
+			if (arr[j] > arr[j + 1]) {
+				temp = arr[j];
+				arr[j] = arr[j + 1];
+				arr[j + 1] = temp;
+			}
+		}
+	}
+}
+
+int Number(double arr[4], double x) {
+	for (int i = 0; i < 4; i++) {
+		if (arr[i] == x) return i;
+	}
+	return -1;
+}
+
+
+double QuadInterp(double x0, double deltaX, double eps_x, double eps_y) { 
+	double X[3] = { x0,0,0 };
+	double F[3] = { 0,0,0 };
+	int k = 0;
+	while (true) {
+		X[1] = X[0] + deltaX;								
+
+		F[0] = initial_function(X[0]);									
+		F[1] = initial_function(X[1]);									
+
+		X[2] = (F[0] > F[1]) ? X[0] + 2 * deltaX : X[0] - deltaX;	
+
+		F[2] = initial_function(X[2]);									
+
+		double Fmin, Xmin, x_, fx_;
+		while (true) {
+			Min_Max(F, X, Fmin, Xmin);			
+
+			cout << "Xmin = " << Xmin << ", Fmin = " << Fmin << endl;
+			
+			double znamen = (X[1] - X[2]) * F[0] + (X[2] - X[0]) * F[1] + (X[0] - X[1]) * F[2];
+			if (znamen == 0) {
+				X[0] = Xmin;
+				
+				break;
+			}
+			x_ = ((X[1] * X[1] - X[2] * X[2]) * F[0] + (X[2] * X[2] - X[0] * X[0]) * F[1] + (X[0] * X[0] - X[1] * X[1]) * F[2]) / (2 * znamen);
+			fx_ = initial_function(x_);
+			if (abs((Fmin - fx_) / fx_) < eps_y && abs((Xmin - x_) / x_) < eps_x) {						
+				return x_;																				
+			}																							
+			else if ((x_ >= X[0] && x_ <= X[2] && X[0] < X[2]) || (x_ <= X[0] && x_ >= X[2])) {			
+				double All_X[4] = { X[0],X[1],X[2],x_ };												
+				sort(All_X);																
+				if (Fmin > fx_) {																		
+					int Min_F_Num = Number(All_X, x_);													
+					cout << "i = " << Min_F_Num << endl;												
+					X[0] = All_X[Min_F_Num - 1];														
+					X[1] = All_X[Min_F_Num];															   
+					X[2] = All_X[Min_F_Num + 1];														  
+				}																						
+				else {																					
+					int Min_F_Num = Number(All_X, Xmin);												
+					cout << "i = " << Min_F_Num << endl;												
+					X[0] = All_X[Min_F_Num - 1];														
+					X[1] = All_X[Min_F_Num];														
+					X[2] = All_X[Min_F_Num + 1];														
+				}																						
+				F[0] = initial_function(X[0]);																		
+				F[1] = initial_function(X[1]);																		
+				F[2] = initial_function(X[2]);																		
+
+
+			}																																											
+			else {																						
+				X[0] = x_;																				
+																							
+				break;																					
+			}
+		}
+	
+	}
+
+}
+
+int main() {
+
+	setlocale(LC_ALL, "Rus");
+
+	double t, x0, a, b, l;
+
+	cout << "Шаг:\nt = ";
+	while (true) {											
+		cin >> t;											
+		if (t <= 0)											
+			cout << "Введите шаг >= 0.\nt = ";	
+		else break;											
+	}														
+	cout << "Начальная точка:\nx0 = ";				
+	cin >> x0;												
+	
+
+	
+	Swann(x0, t, a, b);
+	cout << "Интервал неопределенности: [" << a << ", " << b << "]" << endl;
+
+	cout << "\n";
+	
+	cout << "Метод золотого сечения.\nНачальный интервал неопределенности: L0 = [" << a << ", " << b << "]\nТочность: l = ";
+	while (true) {
+		cin >> l;
+		if (l <= 0)
+			cout << "Введите положительную точность.\n l = ";
+		else break;
+	}
+	double x = GoldMethod(a, b, l);
+	cout << "X* =" << x << endl;
+
+	double x1, eps_x, eps_y, step;
+
+	cout << "\nМетод квадратичной интерполяции.\nНачальная точка: x1 = ";			
+	cin >> x1;																	
+	cout << "Шаг: delta_T = ";											
+	onlypositive(step, "step:\ndelta_T = ");									
+	cout << "Точность для x: epsilon_1 = ";										
+	onlypositive(eps_x, "accuracy for x:\n epsilon_1 = ");						
+	cout << "Точность для y; epsilon_2 = ";										
+	onlypositive(eps_y, "accuracy for y:\n epsilon_2 = ");						
+
+					
+	double x_1 = QuadInterp(x1, step, eps_x, eps_y);
+	cout << "X* = " << x_1;
+}
